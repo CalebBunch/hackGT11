@@ -45,18 +45,19 @@ def create_app(test_config=None) -> Flask:
     def debug():
         seen_crimes = set()
         
-        node = {
+        nodes = [{
             "Latitude": 33.617926,
             "Longitude": -84.472797
-        }
+        }]
         
-        nodeLat = node.get("Latitude")
-        nodeLong = node.get("Longitude")
-        
-        for crime in db.crime.find({"Latitude": {"$gt": nodeLat - LATITUDE_DISTANCE}, "Latitude": {"$lt": nodeLat + LATITUDE_DISTANCE}, "Longitude": {"$gt": nodeLong - LONGITUDE_DISTANCE}, "Longitude": {"$lt": nodeLong + LONGITUDE_DISTANCE}}):
-            info = (crime.get('NIBRS Code Name'), crime.get('Latitude'), crime.get('Longitude'))
-            if info not in seen_crimes:
-                seen_crimes.add(info)
+        for node in nodes:
+            nodeLat = node.get("Latitude")
+            nodeLong = node.get("Longitude")
+            
+            for crime in db.crime.find({"Latitude": {"$gt": nodeLat - LATITUDE_DISTANCE}, "Latitude": {"$lt": nodeLat + LATITUDE_DISTANCE}, "Longitude": {"$gt": nodeLong - LONGITUDE_DISTANCE}, "Longitude": {"$lt": nodeLong + LONGITUDE_DISTANCE}}):
+                info = (crime.get('NIBRS Code Name'), crime.get('Latitude'), crime.get('Longitude'))
+                if info not in seen_crimes:
+                    seen_crimes.add(info)
         
         return render_template("debug.html", db_call_data=seen_crimes)
     
