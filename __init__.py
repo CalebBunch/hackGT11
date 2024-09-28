@@ -36,7 +36,18 @@ def create_app(test_config=None) -> Flask:
     @app.route("/process1", methods=["POST"])
     def process1():
         data = request.get_json()
-        result = data['value']
+        crime_value = data.get("crime")
+        road_quality_value = data.get("roadQuality")
+        lighting_value = data.get("lighting")
+        print(f"crime: {crime_value}, road quality: {road_quality_value}, lighting: {lighting_value}")
+
+        result = {
+            'crime': crime_value,
+            'roadQuality': road_quality_value,
+            'lighting': lighting_value
+        }
+
         return jsonify(result=result)
+
     
     return app
