@@ -5,41 +5,23 @@
     <title>Display a Map on a Webpage</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
-    <style>
-        body { margin: 0; padding: 0; }
-        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
-        .slider-container {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background-color: white;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            padding: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
-        .slider-label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        .slider {
-            margin-bottom: 15px;
-        }
-    </style>
 </head>
 <body>
     <div id="map"></div>
     <div class="slider-container">
         <label class="slider-label" for="crime-slider">Crime</label>
         <input type="range" id="crime-slider" class="slider" min="0" max="100" value="50" />
-        
+
         <label class="slider-label" for="road-quality-slider">Road Quality</label>
         <input type="range" id="road-quality-slider" class="slider" min="0" max="100" value="50" />
-        
+
         <label class="slider-label" for="lighting">Lighting</label>
         <input type="range" id="lighting" class="slider" min="0" max="100" value="50" />
     </div>
     <script src="{{ url_for('static', filename='map.js') }}"></script>
+    <script src="{{ url_for('static', filename='style.js') }}"></script>
 </body>
 </html>
+
