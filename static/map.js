@@ -10,6 +10,8 @@ function success(position) {
     let latitude = position.coords.latitude;
     let longitude = position.coords.longitude;
 
+    document.getElementById("start-destination").value = `${longitude}, ${latitude}`;
+    
     const bounds = [
         [-84.69846451717459, 33.53149303065644], // Southwest coordinates
         [-84.12587550388955, 33.94151145206728] // Northeast coordinates
@@ -22,7 +24,7 @@ function success(position) {
         zoom: 11,
         maxBounds: bounds
     });
-    
+
     marker1 = new mapboxgl.Marker()
         .setLngLat([longitude, latitude])
         .addTo(map);
@@ -35,10 +37,12 @@ function success(position) {
         const { lng, lat } = e.lngLat;
         marker2.setLngLat([lng, lat]);
 
-        // Get routes
+        document.getElementById("end-destination").value = `${lng}, ${lat}`;
+
         await requestRoutes([longitude, latitude], [lng, lat]);
     });
 }
+
 
 function error() {
     alert("Could not access geolocation!");
