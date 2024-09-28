@@ -1,10 +1,16 @@
 from os import error
 import pandas as pd
+from pandas.io.parsers.readers import csv
 
 CRIME_PATH = "data/crime_data.csv"
 CRIME_OUTPUT_PATH = "data/cleaned/cleaned_crime_data.csv"
+
 ROADS_PATH = "data/pavement_condition_index.csv"
 ROADS_OUTPUT_PATH = "data/cleaned/cleaned_pavement_condition_index.csv"
+
+LIGHTS_PATH = "data/filtered_streetlight_data.csv"
+LIGHTS_OUTPUT_PATH = "data/cleaned/cleaned_streetlight_data.csv"
+
 
 def parse_crime_csv():
     df = pd.read_csv(CRIME_PATH, low_memory=False)
@@ -20,7 +26,7 @@ def parse_crime_csv():
     df.drop(columns=columns_to_drop, inplace=True, errors="ignore")
     print("Remaining columns:", df.columns.tolist())
     
-    df.sort_values(by=['Longitude', 'Latitude'], inplace=True)
+    df.sort_values(by=["Latitude"], inplace=True)
     
     print(df.head().to_string())
     unique_nibrs_count = df["NIBRS Code Name"].nunique()
@@ -44,4 +50,12 @@ def parse_roads_csv():
     print(df_filtered.head().to_string())
 
     df_filtered.to_csv(ROADS_OUTPUT_PATH, index=False)
+
+
+def parse_lights_csv():
+    df = pd.read_csv(LIGHTS_PATH)
+    df.sort_values(by=["latitude"], inplace=True)
+
+    print(df.head().to_string())
+    df.to_csv(LIGHTS_OUTPUT_PATH, index=False)
 
