@@ -1,9 +1,25 @@
 const mapboxApiKey = "pk.eyJ1IjoiY2J1bmNoIiwiYSI6ImNtMWxteW13NTBiaDUybHB6cWJ3Y3dnajUifQ.B_7JKx-8vsKrYnbifAwIgg";
 
 mapboxgl.accessToken = mapboxApiKey;
-const map = new mapboxgl.Map({
-    container: "map", // container ID
-    style: "mapbox://styles/mapbox/streets-v11", // style URL
-    center: [-74.5, 40], // starting position [lng, lat]
-    zoom: 9 // starting zoom
-});
+
+function success(position) {
+    let latitude = position.coords.latitude;
+    let longitude = position.coords.longitude;
+
+    const map = new mapboxgl.Map({
+        container: "map",
+        style: "mapbox://styles/mapbox/streets-v11",
+        center: [longitude, latitude],
+        zoom: 9
+    });
+}
+
+function error() {
+    alert('Could not access geolocation!');
+}
+
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(success, error);
+} else {
+    error();
+}
