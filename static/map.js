@@ -10,13 +10,19 @@ function success(position) {
     let latitude = position.coords.latitude;
     let longitude = position.coords.longitude;
 
+    const bounds = [
+        [-84.69846451717459, 33.53149303065644], // Southwest coordinates
+        [-84.12587550388955, 33.94151145206728] // Northeast coordinates
+    ];
+
     map = new mapboxgl.Map({
         container: "map",
         style: "mapbox://styles/mapbox/streets-v11",
         center: [longitude, latitude],
-        zoom: 9
+        zoom: 11,
+        maxBounds: bounds
     });
-
+    
     marker1 = new mapboxgl.Marker()
         .setLngLat([longitude, latitude])
         .addTo(map);
