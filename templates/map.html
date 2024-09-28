@@ -22,13 +22,19 @@
     <label class="slider-label" for="end-destination">End Destination</label>
     <input type="text" id="end-destination" class="destination-input" placeholder="Enter end location" />
 
-    <label class="slider-label" for="crime-slider">Safety</label>
+    <label class="slider-label" for="crime-slider">Safety
+        <img src="{{ url_for('static', filename='icons/shield.svg') }}" alt="Safety Icon" class="icon" />
+    </label>
     <input type="range" id="crime-slider" class="slider" min="0" max="100" value="50" />
-
-    <label class="slider-label" for="road-quality-slider">Walkability</label>
+    
+    <label class="slider-label" for="road-quality-slider">Walkability
+        <img src="{{ url_for('static', filename='icons/walk.svg') }}" alt="Walk Icon" class="icon" />
+    </label>
     <input type="range" id="road-quality-slider" class="slider" min="0" max="100" value="50" />
 
-    <label class="slider-label" for="lighting">Lighting</label>
+    <label class="slider-label" for="lighting">Lighting
+        <img src="{{ url_for('static', filename='icons/light.svg') }}" alt="Light Icon" class="icon" />
+    </label>
     <input type="range" id="lighting" class="slider" min="0" max="100" value="50" />
     </div>
 
