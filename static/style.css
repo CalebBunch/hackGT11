@@ -73,14 +73,14 @@ body {
 .destination-input {
     width: 100%;
     padding: 10px;
-    margin: 0 0 15px 0; /* Adjusted margin for top and bottom */
+    margin: 0 0 15px 0;
     border: 1px solid #e0e0e0;
     border-radius: 5px;
     background-color: #ffffff;
     font-size: 1em;
     color: #333;
     transition: border 0.3s;
-    box-sizing: border-box; /* Ensures padding is included in the total width */
+    box-sizing: border-box;
 }
 
 .destination-input:focus {
@@ -91,3 +91,32 @@ body {
 .destination-input::placeholder {
     color: #aaa;
 }
+
+.routes {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #3b3b3b;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    width: 300px; 
+}
+
+.routes label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    color: #ffffff;
+    font-size: 1em;
+}
+
+.color-box {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    margin-right: 8px;
+}
+
