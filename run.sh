@@ -7,6 +7,6 @@ else
     docker build -t test .
 
     echo "Running a new container..."
-    docker run -d --name $CONTAINER_NAME -p 5000:5000 test
+    docker run --name $CONTAINER_NAME -p 8001:8001 --rm -it test
 fi
 
