@@ -43,9 +43,7 @@ def create_app(test_config=None) -> Flask:
     
     @app.route("/debug")
     def debug():
-        example_db_data = "placeholder" #db.crime.find_one({"Longitude": -84.408028})["NIBRS Code Name"]
-        db_call_data = ""
-        crimeDistances = []
+        seen_crimes = set()
         
         node = {
             "Latitude": 33.617926,
@@ -55,21 +53,12 @@ def create_app(test_config=None) -> Flask:
         nodeLat = node.get("Latitude")
         nodeLong = node.get("Longitude")
         
-        print("Crimes within box:")
+        for crime in db.crime.find({"Latitude": {"$gt": nodeLat - LATITUDE_DISTANCE}, "Latitude": {"$lt": nodeLat + LATITUDE_DISTANCE}, "Longitude": {"$gt": nodeLong - LONGITUDE_DISTANCE}, "Longitude": {"$lt": nodeLong + LONGITUDE_DISTANCE}}):
+            info = (crime.get('NIBRS Code Name'), crime.get('Latitude'), crime.get('Longitude'))
+            if info not in seen_crimes:
+                seen_crimes.add(info)
         
-        for crime in db.crime.find({"Latitude": {"$gt": nodeLat - LATITUDE_DISTANCE}, "Latitude": {"$lt": nodeLat + LATITUDE_DISTANCE}}):
-            pprint.pprint(crime)
-            
-            #get distance from node to crime
-            crimeDistances.append(math.sqrt(
-                    (((crime.get("Latitude") - nodeLat) * RATIO_LATITUDE) ** 2)
-                    + (((crime.get("Longitude") - nodeLong) * RATIO_LONGITUDE) ** 2)))
-        
-        for distance in crimeDistances:
-            print("distance: ", end="")
-            pprint.pprint(distance)
-        
-        return render_template("debug.html", example_db_data=example_db_data, db_call_data=db_call_data)
+        return render_template("debug.html", db_call_data=seen_crimes)
     
     @app.route("/process1", methods=["POST"])
     def process1():
