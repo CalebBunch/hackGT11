@@ -17,6 +17,9 @@ crime_weight = 50
 road_weight = 50
 lighting_weight = 50
 
+paths = []
+# paths -> path -> node
+
 crimeDistances = []
 
 def create_app(test_config=None) -> Flask:
@@ -79,5 +82,25 @@ def create_app(test_config=None) -> Flask:
         lighting_weight = data.get("lighting")
 
         print(f"crime: {crime_weight}, road quality: {road_weight}, lighting: {lighting_weight}")
+        
+        return ""
+    
+    @app.route("/clearPaths", methods=["POST"])
+    def clearPaths():
+        paths = []
+        
+        return ""
+    
+    @app.route("/process2", methods=["POST"])
+    def process2():
+        data = request.get_json()
+        paths.append(data)
+        print("path appended")
+        
+        pprint.pprint(paths)
+        
+        #print("\n\n-----\n\n")
+        
+        return ""
     
     return app

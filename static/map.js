@@ -103,12 +103,42 @@ async function requestRoutes(origin, destination) {
     const url2 = `https://api.mapbox.com/directions/v5/mapbox/walking/${origin.join(",")};${wayPointOne};${destination.join(",")}?geometries=geojson&alternatives=true&access_token=${mapboxApiKey}&steps=true&overview=full`;
     const url3 = `https://api.mapbox.com/directions/v5/mapbox/walking/${origin.join(",")};${wayPointTwo};${destination.join(",")}?geometries=geojson&alternatives=true&access_token=${mapboxApiKey}&steps=true&overview=full`;
     const urls = [url1, url2, url3];
-
+        
+        $.ajax({
+            url: "/clearPaths",
+            type: "POST",
+            contentType: "application/json",
+            data: "",
+            success: function(response) {
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+        
         try {
             const response = await fetch(url1);
             const data = await response.json();
         
             if (data.routes) {
+                var geoData = {
+                    "distance": data.routes[0].distance,
+                    "duration": data.routes[0].duration,
+                    "coordinates": data.routes[0].geometry.coordinates
+                }; //data.routes[0].geometry.coordinates;
+                
+                $.ajax({
+                    url: "/process2",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(geoData),
+                    success: function(response) {
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+                
                 drawRoutes(data.routes);
             } else {
                 console.error("No routes found");
@@ -122,6 +152,24 @@ async function requestRoutes(origin, destination) {
             const data = await response.json();
         
             if (data.routes) {
+                var geoData = {
+                    "distance": data.routes[0].distance,
+                    "duration": data.routes[0].duration,
+                    "coordinates": data.routes[0].geometry.coordinates
+                }; //data.routes[0].geometry.coordinates;
+                
+                $.ajax({
+                    url: "/process2",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(geoData),
+                    success: function(response) {
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+                
                 drawRoutes(data.routes);
             } else {
                 console.error("No routes found");
@@ -135,6 +183,24 @@ async function requestRoutes(origin, destination) {
             const data = await response.json();
         
             if (data.routes) {
+                var geoData = {
+                    "distance": data.routes[0].distance,
+                    "duration": data.routes[0].duration,
+                    "coordinates": data.routes[0].geometry.coordinates
+                }; //data.routes[0].geometry.coordinates;
+                
+                $.ajax({
+                    url: "/process2",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(geoData),
+                    success: function(response) {
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+                
                 drawRoutes(data.routes);
             } else {
                 console.error("No routes found");
