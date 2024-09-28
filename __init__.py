@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
 
 def create_app(test_config=None) -> Flask:
     app = Flask(__name__, instance_relative_config=True)
@@ -32,5 +32,11 @@ def create_app(test_config=None) -> Flask:
     def debug():
         example_db_data = db.crime1.find_one({"Longitude": -84.408028})["NIBRS Code Name"]
         return render_template("debug.html", example_db_data=example_db_data)
+    
+    @app.route("/process1", methods=["POST"])
+    def process1():
+        data = request.get_json()
+        result = data['value']
+        return jsonify(result=result)
     
     return app
