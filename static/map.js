@@ -29,7 +29,7 @@ async function geocode(address) {
 async function handleEnterKey(event) {
     if (event.key === "Enter") {
         const { startDestination, endDestination } = getUserInput();
-        
+
         try {
             const startCoords = await geocode(startDestination);
             const endCoords = await geocode(endDestination);
@@ -102,52 +102,24 @@ async function requestRoutes(origin, destination) {
     const url1 = `https://api.mapbox.com/directions/v5/mapbox/walking/${origin.join(",")};${destination.join(",")}?geometries=geojson&alternatives=true&access_token=${mapboxApiKey}&steps=true&overview=full`;
     const url2 = `https://api.mapbox.com/directions/v5/mapbox/walking/${origin.join(",")};${wayPointOne};${destination.join(",")}?geometries=geojson&alternatives=true&access_token=${mapboxApiKey}&steps=true&overview=full`;
     const url3 = `https://api.mapbox.com/directions/v5/mapbox/walking/${origin.join(",")};${wayPointTwo};${destination.join(",")}?geometries=geojson&alternatives=true&access_token=${mapboxApiKey}&steps=true&overview=full`;
-    
+
     const urls = [url1, url2, url3];
-        
-        $.ajax({
-            url: "/clearPaths",
-            type: "POST",
-            contentType: "application/json",
-            data: "",
-            success: function(response) {
-            },
-            error: function(error) {
-                console.log(error);
-            }
-        });
-        
-        try {
-            const response = await fetch(url1);
-            const data = await response.json();
-        
-            if (data.routes) {
-                var geoData = {
-                    "distance": data.routes[0].distance,
-                    "duration": data.routes[0].duration,
-                    "coordinates": data.routes[0].geometry.coordinates
-                }; //data.routes[0].geometry.coordinates;
-                
-                $.ajax({
-                    url: "/process2",
-                    type: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify(geoData),
-                    success: function(response) {
-                    },
-                    error: function(error) {
-                        console.log(error);
-                    }
-                });
-                
-                drawRoutes(data.routes);
-            } else {
-                console.error("No routes found");
-            }
-        } catch (error) {
-            console.error("Error fetching routes:", error);
+    let all_routes = [];
+
+    $.ajax({
+        url: "/clearPaths",
+        type: "POST",
+        contentType: "application/json",
+        data: "",
+        success: function(response) {
+        },
+        error: function(error) {
+            console.log(error);
         }
-        
+    });
+
+
+    for (const url of urls) {
         try {
             const response = await fetch(url);
             const data = await response.json();
@@ -157,39 +129,8 @@ async function requestRoutes(origin, destination) {
                     "distance": data.routes[0].distance,
                     "duration": data.routes[0].duration,
                     "coordinates": data.routes[0].geometry.coordinates
-                }; //data.routes[0].geometry.coordinates;
-                
-                $.ajax({
-                    url: "/process2",
-                    type: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify(geoData),
-                    success: function(response) {
-                    },
-                    error: function(error) {
-                        console.log(error);
-                    }
-                });
-                
-                drawRoutes(data.routes);
-            } else {
-                console.error("No routes found");
-            }
-        } catch (error) {
-            console.error("Error fetching routes:", error);
-        }
+                };
 
-        try {
-            const response = await fetch(url3);
-            const data = await response.json();
-        
-            if (data.routes) {
-                var geoData = {
-                    "distance": data.routes[0].distance,
-                    "duration": data.routes[0].duration,
-                    "coordinates": data.routes[0].geometry.coordinates
-                }; //data.routes[0].geometry.coordinates;
-                
                 $.ajax({
                     url: "/process2",
                     type: "POST",
@@ -201,8 +142,8 @@ async function requestRoutes(origin, destination) {
                         console.log(error);
                     }
                 });
-                
-                drawRoutes(data.routes);
+
+                all_routes.push(...data.routes);
             } else {
                 console.error("No routes found");
             }
@@ -211,6 +152,7 @@ async function requestRoutes(origin, destination) {
         }
     }
 
+    // sort such that best route is last
     drawRoutes(all_routes);
 }
 
@@ -224,7 +166,7 @@ function calculateWayPoints(origin, destination) {
         let wayPointLon = originLon + (fraction * (destinationLon - originLon));
         let wayPointLat = originLat + (fraction * (destinationLat - originLat));
         waypoints.push([wayPointLon, wayPointLat])
-        
+
     }
     return waypoints
 }
@@ -235,7 +177,7 @@ function drawRoutes(routes) {
         clearPreviousRoutes();
     }
 
-    const colors = [#00FF00", "#FF0000", "#FF6600"];
+    const colors = ["#FF0000", "#FF6600", "#00FF00"];
 
     routes.forEach((route, index) => {
         const routeGeoJSON = {
