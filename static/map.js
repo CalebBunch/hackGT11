@@ -17,7 +17,7 @@ function success(position) {
 
     map = new mapboxgl.Map({
         container: "map",
-        style: "mapbox://styles/mapbox/streets-v11",
+        style: "mapbox://styles/mapbox/dark-v11",
         center: [longitude, latitude],
         zoom: 11,
         maxBounds: bounds
@@ -45,7 +45,7 @@ function error() {
 }
 
 async function requestRoutes(origin, destination) {
-    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${origin.join(",")};${destination.join(",")}?geometries=geojson&alternatives=true&access_token=${mapboxApiKey}&steps=true`;
+    const url = `https://api.mapbox.com/directions/v5/mapbox/walking/${origin.join(",")};${destination.join(",")}?geometries=geojson&alternatives=true&access_token=${mapboxApiKey}&steps=true`;
 
     try {
         const response = await fetch(url);
