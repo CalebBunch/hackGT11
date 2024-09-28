@@ -2,4 +2,4 @@
 docker ps -a                      : list all docker containers
 docker container prune            : remove all nonactive containers
 docker kill test_container        : stop container named test_container
-curl http://127.0.0.1:5000/hello  : interact with the flask app
+curl http://127.0.0.1:8001/hello  : interact with the flask app
