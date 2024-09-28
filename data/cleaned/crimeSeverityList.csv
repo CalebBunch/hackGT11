@@ -32,7 +32,6 @@ Theft From Coin-Operated Machine or Device,2
 Bribery,10
 Extortion/Blackmail,10
 Pocket-picking,20
-Hacking/Computer Invasion,1
 Assisting or Promoting Prostitution,30
 Statutory Rape,90
 Prostitution,30
@@ -43,3 +42,6 @@ Counterfeiting/Forgery,1
 Gambling Equipment Violation,1
 Hacking/Computer Invasion,1
 Welfare Fraud,1
+Credit Card/Automated Teller Machine Fraud,5
+Identity Theft,3
+Impersonation,2
