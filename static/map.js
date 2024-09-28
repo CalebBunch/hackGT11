@@ -6,12 +6,58 @@ let map;
 let marker1;
 let marker2;
 
+function getUserInput() {
+    const startDestination = document.getElementById("start-destination").value;
+    const endDestination = document.getElementById("end-destination").value;
+    return { startDestination, endDestination };
+}
+
+async function geocode(address) {
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxApiKey}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    if (data.features && data.features.length > 0) {
+        return {
+            lng: data.features[0].geometry.coordinates[0],
+            lat: data.features[0].geometry.coordinates[1],
+        };
+    }
+    throw new Error("No results found");
+}
+
+async function handleEnterKey(event) {
+    if (event.key === "Enter") {
+        const { startDestination, endDestination } = getUserInput();
+        
+        try {
+            const startCoords = await geocode(startDestination);
+            const endCoords = await geocode(endDestination);
+
+            // Update markers
+            marker1.setLngLat([startCoords.lng, startCoords.lat]);
+            marker2.setLngLat([endCoords.lng, endCoords.lat]);
+
+            // Optionally update the input fields to show the coordinates
+            document.getElementById("start-destination").value = `${startCoords.lng}, ${startCoords.lat}`;
+            document.getElementById("end-destination").value = `${endCoords.lng}, ${endCoords.lat}`;
+
+            // Request new routes
+            await requestRoutes([startCoords.lng, startCoords.lat], [endCoords.lng, endCoords.lat]);
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+}
+
+document.getElementById("start-destination").addEventListener("keydown", handleEnterKey);
+document.getElementById("end-destination").addEventListener("keydown", handleEnterKey);
+
 function success(position) {
     let latitude = position.coords.latitude;
     let longitude = position.coords.longitude;
 
     document.getElementById("start-destination").value = `${longitude}, ${latitude}`;
-    
+
     const bounds = [
         [-84.69846451717459, 33.53149303065644], // Southwest coordinates
         [-84.12587550388955, 33.94151145206728] // Northeast coordinates
@@ -42,7 +88,6 @@ function success(position) {
         await requestRoutes([longitude, latitude], [lng, lat]);
     });
 }
-
 
 function error() {
     alert("Could not access geolocation!");
