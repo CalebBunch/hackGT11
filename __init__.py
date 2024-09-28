@@ -16,12 +16,10 @@ def create_app(test_config=None) -> Flask:
     uri = "mongodb+srv://leapingturtlefrog:9aMc5Ko52zSqwiYh@base.grpjw.mongodb.net/?retryWrites=true&w=majority&appName=Base"
 
     client = MongoClient(uri)
-    db = client.maps1
+    db = client.maps2
 
     try:
         client.admin.command("ping")
-        example = db.crime
-        # print(example)
     except Exception as e:
         print(e)
 
@@ -31,7 +29,7 @@ def create_app(test_config=None) -> Flask:
     
     @app.route("/debug")
     def debug():
-        example_db_data = db.crime1.find_one({"Longitude": -84.408028})["NIBRS Code Name"]
+        example_db_data = db.crime.find_one({"Longitude": -84.408028})["NIBRS Code Name"]
         return render_template("debug.html", example_db_data=example_db_data)
     
     @app.route("/process1", methods=["POST"])
@@ -42,14 +40,5 @@ def create_app(test_config=None) -> Flask:
         lighting_weight = data.get("lighting")
 
         print(f"crime: {crime_weight}, road quality: {road_weight}, lighting: {lighting_weight}")
-
-        result = {
-            "crime": crime_weight,
-            "roadQuality": road_weight,
-            "lighting": lighting_weight
-        }
-
-        return jsonify(result=result)
-
     
     return app
