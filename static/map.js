@@ -95,53 +95,33 @@ function error() {
 }
 
 async function requestRoutes(origin, destination) {
-    let wayPoints = calculateWayPoints(origin, destination)
+    let wayPoints = calculateWayPoints(origin, destination);
     let wayPointOne = wayPoints[0].join(",");
     let wayPointTwo = wayPoints[1].join(",");
 
     const url1 = `https://api.mapbox.com/directions/v5/mapbox/walking/${origin.join(",")};${destination.join(",")}?geometries=geojson&alternatives=true&access_token=${mapboxApiKey}&steps=true&overview=full`;
     const url2 = `https://api.mapbox.com/directions/v5/mapbox/walking/${origin.join(",")};${wayPointOne};${destination.join(",")}?geometries=geojson&alternatives=true&access_token=${mapboxApiKey}&steps=true&overview=full`;
     const url3 = `https://api.mapbox.com/directions/v5/mapbox/walking/${origin.join(",")};${wayPointTwo};${destination.join(",")}?geometries=geojson&alternatives=true&access_token=${mapboxApiKey}&steps=true&overview=full`;
+    
     const urls = [url1, url2, url3];
+    let all_routes = [];
 
+    for (const url of urls) {
         try {
-            const response = await fetch(url1);
+            const response = await fetch(url);
             const data = await response.json();
-        
-            if (data.routes) {
-                drawRoutes(data.routes);
-            } else {
-                console.error("No routes found");
-            }
-        } catch (error) {
-            console.error("Error fetching routes:", error);
-        }
-        
-        try {
-            const response = await fetch(url2);
-            const data = await response.json();
-        
-            if (data.routes) {
-                drawRoutes(data.routes);
-            } else {
-                console.error("No routes found");
-            }
-        } catch (error) {
-            console.error("Error fetching routes:", error);
-        }
 
-        try {
-            const response = await fetch(url3);
-            const data = await response.json();
-        
             if (data.routes) {
-                drawRoutes(data.routes);
+                all_routes.push(...data.routes);
             } else {
                 console.error("No routes found");
             }
         } catch (error) {
             console.error("Error fetching routes:", error);
         }
+    }
+
+    drawRoutes(all_routes);
 }
 
 function calculateWayPoints(origin, destination) {
@@ -155,25 +135,13 @@ function calculateWayPoints(origin, destination) {
         let wayPointLat = originLat + (fraction * (destinationLat - originLat));
         waypoints.push([wayPointLon, wayPointLat])
         
-        // let marker = new mapboxgl.Marker({ color: "red" })
-        //     .setLngLat([wayPointLon, wayPointLat])
-        //     .addTo(map)
     }
     return waypoints
 }
 
+
 function drawRoutes(routes) {
-    // const existingLayers = map.getStyle().layers.filter(layer => layer.id.startsWith("route"));
-    // existingLayers.forEach(layer => map.removeLayer(layer.id));
-
-    // const existingSources = map.getStyle().sources;
-    // Object.keys(existingSources).forEach(sourceId => {
-    //     if (sourceId.startsWith("route")) {
-    //         map.removeSource(sourceId);
-    //     }
-    // });
-
-    if (routeGroupIds.length == 3) {
+    if (routeGroupIds.length === 3) {
         clearPreviousRoutes();
     }
 
@@ -183,7 +151,7 @@ function drawRoutes(routes) {
         const routeGeoJSON = {
             type: "Feature",
             properties: {
-                stroke: colors[index % colors.length],
+                stroke: colors[index % colors.length], // Use the color based on index
                 "stroke-width": 4,
                 "stroke-opacity": 0.8
             },
@@ -208,13 +176,14 @@ function drawRoutes(routes) {
                 "line-join": "round"
             },
             paint: {
-                "line-color": routeGeoJSON.properties.stroke,
+                "line-color": routeGeoJSON.properties.stroke, // Correctly apply stroke color
                 "line-width": routeGeoJSON.properties["stroke-width"],
                 "line-opacity": routeGeoJSON.properties["stroke-opacity"]
             }
         });
     });
 }
+
 
 function clearPreviousRoutes() {
     routeGroupIds.forEach(routeId => {
