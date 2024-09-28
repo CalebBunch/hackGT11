@@ -1,6 +1,10 @@
 import os
 from flask import Flask, render_template, request, jsonify
 
+crime_weight = 50
+road_weight = 50
+lighting_weight = 50
+
 def create_app(test_config=None) -> Flask:
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
@@ -11,16 +15,13 @@ def create_app(test_config=None) -> Flask:
 
     uri = "mongodb+srv://leapingturtlefrog:9aMc5Ko52zSqwiYh@base.grpjw.mongodb.net/?retryWrites=true&w=majority&appName=Base"
 
-    # Create a new client and connect to the server
     client = MongoClient(uri)
     db = client.maps1
 
-    # Send a ping to confirm a successful connection
     try:
-        client.admin.command('ping')
-        #print("Pinged your deployment. You successfully connected to MongoDB!")
+        client.admin.command("ping")
         example = db.crime
-        #print(example)
+        # print(example)
     except Exception as e:
         print(e)
 
@@ -36,15 +37,16 @@ def create_app(test_config=None) -> Flask:
     @app.route("/process1", methods=["POST"])
     def process1():
         data = request.get_json()
-        crime_value = data.get("crime")
-        road_quality_value = data.get("roadQuality")
-        lighting_value = data.get("lighting")
-        print(f"crime: {crime_value}, road quality: {road_quality_value}, lighting: {lighting_value}")
+        crime_weight = data.get("crime")
+        road_weight = data.get("roadQuality")
+        lighting_weight = data.get("lighting")
+
+        print(f"crime: {crime_weight}, road quality: {road_weight}, lighting: {lighting_weight}")
 
         result = {
-            'crime': crime_value,
-            'roadQuality': road_quality_value,
-            'lighting': lighting_value
+            "crime": crime_weight,
+            "roadQuality": road_weight,
+            "lighting": lighting_weight
         }
 
         return jsonify(result=result)
