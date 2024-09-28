@@ -11,7 +11,7 @@ def print_csv():
 def main() -> None:
     print_csv()
     app = create_app()
-    app.run(host="127.0.0.1", port=8001)
+    app.run(host="0.0.0.0", port=8001)
 
 if __name__ == "__main__":
     main()
