@@ -6,6 +6,7 @@
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style>
         body { margin: 0; padding: 0; }
         #map { position: absolute; top: 0; bottom: 0; width: 100%; }
@@ -26,6 +27,13 @@
         .slider {
             margin-bottom: 15px;
         }
+        .calculate-button {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .result {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -39,7 +47,28 @@
         
         <label class="slider-label" for="lighting">Lighting</label>
         <input type="range" id="lighting" class="slider" min="0" max="100" value="50" />
+        
+        <button class="calculate-button" onclick="sendData()">Calculate</button>
+        
+        <div class="result" id="result">result-placeholder</div>
     </div>
+    <script>
+        function sendData() {
+            var value = document.getElementById('crime-slider').value;
+            $.ajax({
+                url: '/process1',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ 'value': value }),
+                success: function(response) {
+                    document.getElementById('result').innerHTML = response.result;
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        }
+    </script>
     <script src="{{ url_for('static', filename='map.js') }}"></script>
 </body>
 </html>
