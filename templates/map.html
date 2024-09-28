@@ -15,17 +15,23 @@
     </style>
 </head>
 <body>
-    <div id="map"></div>
     <div class="slider-container">
-        <label class="slider-label" for="crime-slider">Crime</label>
-        <input type="range" id="crime-slider" class="slider" min="0" max="100" value="50" />
+    <label class="slider-label" for="start-destination">Start Destination</label>
+    <input type="text" id="start-destination" class="destination-input" placeholder="Enter start location" />
 
-        <label class="slider-label" for="road-quality-slider">Road Quality</label>
-        <input type="range" id="road-quality-slider" class="slider" min="0" max="100" value="50" />
+    <label class="slider-label" for="end-destination">End Destination</label>
+    <input type="text" id="end-destination" class="destination-input" placeholder="Enter end location" />
 
-        <label class="slider-label" for="lighting">Lighting</label>
-        <input type="range" id="lighting" class="slider" min="0" max="100" value="50" />
+    <label class="slider-label" for="crime-slider">Crime</label>
+    <input type="range" id="crime-slider" class="slider" min="0" max="100" value="50" />
+
+    <label class="slider-label" for="road-quality-slider">Road Quality</label>
+    <input type="range" id="road-quality-slider" class="slider" min="0" max="100" value="50" />
+
+    <label class="slider-label" for="lighting">Lighting</label>
+    <input type="range" id="lighting" class="slider" min="0" max="100" value="50" />
     </div>
+
     <script>
         function sendData() {
             const crimeValue = document.getElementById("crime-slider").value;
