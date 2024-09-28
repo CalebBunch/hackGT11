@@ -5,6 +5,7 @@ mapboxgl.accessToken = mapboxApiKey;
 let map;
 let marker1;
 let marker2;
+let routeGroupIds = [];
 
 function success(position) {
     let latitude = position.coords.latitude;
@@ -45,32 +46,87 @@ function error() {
 }
 
 async function requestRoutes(origin, destination) {
-    const url = `https://api.mapbox.com/directions/v5/mapbox/walking/${origin.join(",")};${destination.join(",")}?geometries=geojson&alternatives=true&access_token=${mapboxApiKey}&steps=true`;
+    let wayPoints = calculateWayPoints(origin, destination)
+    let wayPointOne = wayPoints[0].join(",");
+    let wayPointTwo = wayPoints[1].join(",");
 
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
+    const url1 = `https://api.mapbox.com/directions/v5/mapbox/walking/${origin.join(",")};${destination.join(",")}?geometries=geojson&alternatives=true&access_token=${mapboxApiKey}&steps=true&overview=full`;
+    const url2 = `https://api.mapbox.com/directions/v5/mapbox/walking/${origin.join(",")};${wayPointOne};${destination.join(",")}?geometries=geojson&alternatives=true&access_token=${mapboxApiKey}&steps=true&overview=full`;
+    const url3 = `https://api.mapbox.com/directions/v5/mapbox/walking/${origin.join(",")};${wayPointTwo};${destination.join(",")}?geometries=geojson&alternatives=true&access_token=${mapboxApiKey}&steps=true&overview=full`;
+    const urls = [url1, url2, url3];
 
-        if (data.routes) {
-            drawRoutes(data.routes);
-        } else {
-            console.error("No routes found");
+        try {
+            const response = await fetch(url1);
+            const data = await response.json();
+        
+            if (data.routes) {
+                drawRoutes(data.routes);
+            } else {
+                console.error("No routes found");
+            }
+        } catch (error) {
+            console.error("Error fetching routes:", error);
         }
-    } catch (error) {
-        console.error("Error fetching routes:", error);
+        
+        try {
+            const response = await fetch(url2);
+            const data = await response.json();
+        
+            if (data.routes) {
+                drawRoutes(data.routes);
+            } else {
+                console.error("No routes found");
+            }
+        } catch (error) {
+            console.error("Error fetching routes:", error);
+        }
+
+        try {
+            const response = await fetch(url3);
+            const data = await response.json();
+        
+            if (data.routes) {
+                drawRoutes(data.routes);
+            } else {
+                console.error("No routes found");
+            }
+        } catch (error) {
+            console.error("Error fetching routes:", error);
+        }
+}
+
+function calculateWayPoints(origin, destination) {
+    let waypoints = [];
+    let [originLon, originLat] = origin
+    let [destinationLon, destinationLat] = destination
+
+    for (let i = 1; i <= 2; i++) {
+        let fraction = i / 3;
+        let wayPointLon = originLon + (fraction * (destinationLon - originLon));
+        let wayPointLat = originLat + (fraction * (destinationLat - originLat));
+        waypoints.push([wayPointLon, wayPointLat])
+        
+        // let marker = new mapboxgl.Marker({ color: "red" })
+        //     .setLngLat([wayPointLon, wayPointLat])
+        //     .addTo(map)
     }
+    return waypoints
 }
 
 function drawRoutes(routes) {
-    const existingLayers = map.getStyle().layers.filter(layer => layer.id.startsWith("route"));
-    existingLayers.forEach(layer => map.removeLayer(layer.id));
+    // const existingLayers = map.getStyle().layers.filter(layer => layer.id.startsWith("route"));
+    // existingLayers.forEach(layer => map.removeLayer(layer.id));
 
-    const existingSources = map.getStyle().sources;
-    Object.keys(existingSources).forEach(sourceId => {
-        if (sourceId.startsWith("route")) {
-            map.removeSource(sourceId);
-        }
-    });
+    // const existingSources = map.getStyle().sources;
+    // Object.keys(existingSources).forEach(sourceId => {
+    //     if (sourceId.startsWith("route")) {
+    //         map.removeSource(sourceId);
+    //     }
+    // });
+
+    if (routeGroupIds.length == 3) {
+        clearPreviousRoutes();
+    }
 
     const colors = ["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF"];
 
@@ -85,16 +141,19 @@ function drawRoutes(routes) {
             geometry: route.geometry
         };
 
+        const routeId = `route${Date.now()}-${index}`;
+        routeGroupIds.push(routeId);
+
         // Add the route to the map
-        map.addSource(`route${index}`, {
+        map.addSource(routeId, {
             type: "geojson",
             data: routeGeoJSON
         });
 
         map.addLayer({
-            id: `route${index}`,
+            id: routeId,
             type: "line",
-            source: `route${index}`,
+            source: routeId,
             layout: {
                 "line-cap": "round",
                 "line-join": "round"
@@ -106,6 +165,18 @@ function drawRoutes(routes) {
             }
         });
     });
+}
+
+function clearPreviousRoutes() {
+    routeGroupIds.forEach(routeId => {
+        if (map.getLayer(routeId)) {
+            map.removeLayer(routeId);
+        }
+        if (map.getSource(routeId)) {
+            map.removeSource(routeId)
+        }
+    });
+    routeGroupIds = [];
 }
 
 if (navigator.geolocation) {
