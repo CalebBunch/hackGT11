@@ -70,3 +70,24 @@ body {
     outline: none;
 }
 
+.destination-input {
+    width: 100%;
+    padding: 10px;
+    margin: 0 0 15px 0; /* Adjusted margin for top and bottom */
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    background-color: #ffffff;
+    font-size: 1em;
+    color: #333;
+    transition: border 0.3s;
+    box-sizing: border-box; /* Ensures padding is included in the total width */
+}
+
+.destination-input:focus {
+    border-color: #4CAF50;
+    outline: none;
+}
+
+.destination-input::placeholder {
+    color: #aaa;
+}
