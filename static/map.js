@@ -145,7 +145,7 @@ function drawRoutes(routes) {
         clearPreviousRoutes();
     }
 
-    const colors = ["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF"];
+    const colors = [#00FF00", "#FF0000", "#FF6600"];
 
     routes.forEach((route, index) => {
         const routeGeoJSON = {
