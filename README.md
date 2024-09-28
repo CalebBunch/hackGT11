@@ -1,2 +1,2 @@
 # hackGT11
-Project for hackGT 11
+Project for hackGT11
