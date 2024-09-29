@@ -1,3 +1,4 @@
+// NOTE: this is BAD practice
 const mapboxApiKey = "pk.eyJ1IjoiY2J1bmNoIiwiYSI6ImNtMWxteW13NTBiaDUybHB6cWJ3Y3dnajUifQ.B_7JKx-8vsKrYnbifAwIgg";
 
 mapboxgl.accessToken = mapboxApiKey;
