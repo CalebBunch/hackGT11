@@ -164,6 +164,19 @@ async function requestRoutes(origin, destination) {
             console.error("Error fetching routes:", error);
         }
     }
+
+    weights.sort((a, b) => a[2] - b[2]);
+
+    renderRoutes();
+
+    let i = 0;
+    document.querySelectorAll(".route-label").forEach(label => {
+        if (weights[i]) {
+            const [distance, duration, rating] = weights[i];
+            label.textContent = `Distance: ${distance.toFixed(2)} m - Time: ${duration.toFixed(2)} s - Overall Rating: ${rating}`;
+            i++;
+        }
+    });
     
     drawRoutes(all_routes);
 }
@@ -241,6 +254,11 @@ function clearPreviousRoutes() {
     routeGroupIds = [];
 }
 
+
+function renderRoutes() {
+    const routesDiv = document.getElementsByClassName("routes");
+    routesDiv[0].style.display = "block"; 
+}
 
 if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(success, error);
