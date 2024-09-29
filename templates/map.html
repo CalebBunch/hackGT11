@@ -53,6 +53,23 @@
         <span class="route-label" data-color="red">Red</span>
     </label>
     </div>
+    <script>
+        function updateRouteLabels() {
+        const routes = {
+            green: "Safe",
+            orange: "Moderate",
+            red: "Unsafe"
+        };
+
+        document.querySelectorAll(".route-label").forEach(label => {
+            const color = label.getAttribute("data-color");
+            if (routes[color]) {
+                label.textContent = routes[color];
+            }
+        });
+    }
+    updateRouteLabels();
+    </script>
 
     <script>
         function sendData() {
