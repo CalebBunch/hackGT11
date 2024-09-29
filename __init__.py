@@ -87,8 +87,9 @@ def create_app(test_config=None) -> Flask:
         crime_weight = data.get("crime")
         road_weight = data.get("roadQuality")
         lighting_weight = data.get("lighting")
+        time_weight = data.get("time")
 
-        print(f"crime: {crime_weight}, road quality: {road_weight}, lighting: {lighting_weight}")
+        print(f"crime: {crime_weight}, road quality: {road_weight}, lighting: {lighting_weight}, time: {time_weight}")
         
         return ""
     
