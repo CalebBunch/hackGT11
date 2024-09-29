@@ -174,7 +174,8 @@ async function requestRoutes(origin, destination) {
                             document.querySelectorAll(".route-label").forEach(label => {
                                 if (weights[i]) {
                                     const [distance, duration, rating] = weights[i];
-                                    label.textContent = `Distance: ${distance.toFixed(2)} m - Time: ${duration.toFixed(2)} s - Overall Rating: ${rating}`;
+                                    const durationInMinutes = Math.round(duration / 60.0);
+                                    label.textContent = `Distance: ${distance.toFixed(2)} m — Travel Time: ${durationInMinutes.toFixed(2)} min — Overall Rating: ${rating}`;
                                     i++;
                                 }
                             });
