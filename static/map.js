@@ -150,6 +150,8 @@ async function requestRoutes(origin, destination) {
 
     weights.sort((a, b) => a[2] - b[2]);
 
+    renderRoutes();
+
     let i = 0;
     document.querySelectorAll(".route-label").forEach(label => {
         if (weights[i]) {
@@ -159,7 +161,6 @@ async function requestRoutes(origin, destination) {
         }
     });
     
-    alert(all_routes.length);
     drawRoutes(all_routes);
 }
 
@@ -236,6 +237,11 @@ function clearPreviousRoutes() {
     routeGroupIds = [];
 }
 
+
+function renderRoutes() {
+    const routesDiv = document.getElementsByClassName("routes");
+    routesDiv[0].style.display = "block"; 
+}
 
 if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(success, error);
