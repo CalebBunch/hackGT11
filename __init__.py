@@ -4,6 +4,7 @@ import pprint
 import math
 import time
 import os
+import re
 
 FEET_PER_LATITUDE = 365000.0
 FEET_PER_LONGITUDE = 288200.0
@@ -18,11 +19,33 @@ LONGITUDE_DISTANCE = FEET_FROM_NODE_BOX_LENGTH / FEET_PER_LONGITUDE
 crime_weight = 50
 road_weight = 50
 lighting_weight = 50
+time_weight = 50
 
 paths = []
 # paths -> path -> node
 
 crimeDistances = []
+
+def transform(street_name):
+    street_types = {
+        'Terrace': 'TER',
+        'Parkway': 'PKWY',
+        'Boulevard': 'BLVD',
+        'Trail': 'TRL',
+        'PATH Trail': 'PATH TRL',
+        'Street': 'ST',
+        'Road': 'RD',
+        'Drive': 'DR',
+        'Avenue': 'AVE',
+        'Circle': 'CIR'
+    }
+    
+    for street_type, abbreviation in street_types.items():
+        match = re.search(fr'\b{street_type}\b', street_name, re.IGNORECASE)
+        if match:
+            return street_name[:match.end()].replace(street_type, abbreviation).upper()
+
+    return ''
 
 def create_app(test_config=None) -> Flask:
     app = Flask(__name__, instance_relative_config=True)
@@ -87,15 +110,39 @@ def create_app(test_config=None) -> Flask:
         # streetlights
         batches = [(node[1] - LATITUDE_DISTANCE, node[1] + LATITUDE_DISTANCE, node[0] - LONGITUDE_DISTANCE, node[0] + LONGITUDE_DISTANCE) for node in data["coordinates"]]
 
-        num_of_lights = db.streetlights.count_documents({"$or": [{"$and": [{"latitude": {"$gt": lat_min}}, {"latitude": {"$lt": lat_max}}, {"longitude": {"$gt": long_min}}, {"longitude": {"$lt": long_max}}]} for lat_min, lat_max, long_min, long_max in batches]})
+        lighting_index = db.streetlights.count_documents({"$or": [{"$and": [{"latitude": {"$gt": lat_min}}, {"latitude": {"$lt": lat_max}}, {"longitude": {"$gt": long_min}}, {"longitude": {"$lt": long_max}}]} for lat_min, lat_max, long_min, long_max in batches]})
         
-        print(f'Crimes: {len(seen_crimes)}. Streetlights: {num_of_lights}')
+        # road quality
+
+        street_list = set(data['streets'])
+        parsed_streets = [transform(street) for street in street_list]
+        qual_sum = 0
+
+        for street in parsed_streets:
+            if street != '':
+                try:
+                    qual_sum += db.road_quality.find_one({'Street Name': street}).get('Surface Distress Index')
+                except:
+                    pass
+        
+        road_index = qual_sum / len(street_list)
+
+        crime_index = sum([crime[0] for crime in seen_crimes])
+
+        time_index = data['duration']
+
+        crime_final = crime_index * crime_weight / 100
+        lighting_final = lighting_index * lighting_weight
+        road_final = road_index * road_weight * 2
+        time_final = time_index * time_weight * 2 / 100
+
+        print(f'Crime Index: {crime_final}. Streetlight Index: {lighting_final}. Road Quality Index: {road_final}. Time Index: {time_final}.')
         
         end = time.perf_counter()
         
         print(f"Time to complete: {end - start}")
-        
-        return jsonify(round(end))
+
+        return jsonify(round(crime_final + time_final - lighting_final - road_final))
 
     
     return app
