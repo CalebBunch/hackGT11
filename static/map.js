@@ -134,7 +134,24 @@ async function requestRoutes(origin, destination) {
                     contentType: "application/json",
                     data: JSON.stringify(geoData),
                     success: function(response) {
+                        console.log("success")
+                        console.log("distance ", geoData['distance'])
+                        console.log("duration: ", geoData['duration'])
+                        
                         weights.push([geoData['distance'], geoData['duration'], JSON.parse(response)]);
+                        
+                        weights.sort((a, b) => a[2] - b[2]);
+
+                        let i = 0;
+                        document.querySelectorAll(".route-label").forEach(label => {
+                            if (weights[i]) {
+                                const [distance, duration, rating] = weights[i];
+                                label.textContent = `Distance: ${distance.toFixed(2)} m - Time: ${duration.toFixed(2)} s - Overall Rating: ${rating}`;
+                                i++;
+                            }
+                        });
+                        
+                        alert(all_routes.length);
                     },
                 });
 
@@ -147,19 +164,7 @@ async function requestRoutes(origin, destination) {
             console.error("Error fetching routes:", error);
         }
     }
-
-    weights.sort((a, b) => a[2] - b[2]);
-
-    let i = 0;
-    document.querySelectorAll(".route-label").forEach(label => {
-        if (weights[i]) {
-            const [distance, duration, rating] = weights[i];
-            label.textContent = `Distance: ${distance.toFixed(2)} m - Time: ${duration.toFixed(2)} s - Overall Rating: ${rating}`;
-            i++;
-        }
-    });
     
-    alert(all_routes.length);
     drawRoutes(all_routes);
 }
 
