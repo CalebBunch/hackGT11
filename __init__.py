@@ -95,7 +95,7 @@ def create_app(test_config=None) -> Flask:
         
         print(f"Time to complete: {end - start}")
         
-        return ""
+        return jsonify(round(end))
 
     
     return app

@@ -106,8 +106,8 @@ async function requestRoutes(origin, destination) {
         `https://api.mapbox.com/directions/v5/mapbox/walking/${origin.join(",")};${wayPointTwo};${destination.join(",")}?geometries=geojson&alternatives=true&access_token=${mapboxApiKey}&steps=true&overview=full`
     ];
 
-    const weights = [];
-    const all_routes = [];
+    let weights = [];
+    let all_routes = [];
 
     await $.ajax({
         url: "/clearPaths",
@@ -115,7 +115,8 @@ async function requestRoutes(origin, destination) {
         contentType: "application/json",
         data: ""
     });
-
+    
+    let cnt = 0;
     for (const url of urls) {
         try {
             const response = await fetch(url);
@@ -143,53 +144,55 @@ async function requestRoutes(origin, destination) {
                     contentType: "application/json",
                     data: JSON.stringify(geoData),
                     success: function(response) {
-                        console.log("success")
-                        console.log("distance ", geoData['distance'])
-                        console.log("duration: ", geoData['duration'])
-                        
-                        weights.push([geoData['distance'], geoData['duration'], JSON.parse(response)]);
-                        
-                        weights.sort((a, b) => a[2] - b[2]);
+                        cnt += 1;
 
-                        let i = 0;
-                        document.querySelectorAll(".route-label").forEach(label => {
-                            if (weights[i]) {
-                                const [distance, duration, rating] = weights[i];
-                                label.textContent = `Distance: ${distance.toFixed(2)} m - Time: ${duration.toFixed(2)} s - Overall Rating: ${rating}`;
-                                i++;
-                            }
-                        });
+                        try {
+                            const parsedResponse = JSON.parse(response);
+                            weights.push([geoData['distance'], geoData['duration'], parsedResponse]);
+                            all_routes.push(...data.routes);
+
+                        } catch (error) {
+                            console.error("Error parsing JSON:", error);
+                        }
+
+                        if (cnt === 3) {
                         
-                        alert(all_routes.length);
+                            weights.sort((a, b) => a[2] - b[2]);
+
+                            const combined = all_routes.map((route, index) => ({
+                                route: route,
+                                weight: weights[index][2]
+                            }));
+
+                            combined.sort((a, b) => a.weight - b.weight);
+
+                            const sortedRoutes = combined.map(item => item.route);
+                        
+                            renderRoutes();
+                        
+                            let i = 0;
+                            document.querySelectorAll(".route-label").forEach(label => {
+                                if (weights[i]) {
+                                    const [distance, duration, rating] = weights[i];
+                                    label.textContent = `Distance: ${distance.toFixed(2)} m - Time: ${duration.toFixed(2)} s - Overall Rating: ${rating}`;
+                                    i++;
+                                }
+                            });
+                          
+                            drawRoutes(sortedRoutes);
+
+                        }  
                     },
                 });
 
-                // weights.push([geoData['distance'], geoData['duration'], JSON.parse(processResponse)]);
-                all_routes.push(...data.routes);
             } else {
                 console.error("No routes found");
             }
         } catch (error) {
             console.error("Error fetching routes:", error);
         }
-        
-        break;
     }
 
-    weights.sort((a, b) => a[2] - b[2]);
-
-    renderRoutes();
-
-    let i = 0;
-    document.querySelectorAll(".route-label").forEach(label => {
-        if (weights[i]) {
-            const [distance, duration, rating] = weights[i];
-            label.textContent = `Distance: ${distance.toFixed(2)} m - Time: ${duration.toFixed(2)} s - Overall Rating: ${rating}`;
-            i++;
-        }
-    });
-    
-    drawRoutes(all_routes);
 }
 
 function calculateWayPoints(origin, destination) {
