@@ -5,7 +5,7 @@ import math
 
 FEET_PER_LATITUDE = 365000.0
 FEET_PER_LONGITUDE = 288200.0
-FEET_FROM_NODE_BOX_LENGTH = 5000
+FEET_FROM_NODE_BOX_LENGTH = 5
 
 RATIO_LATITUDE = FEET_PER_LATITUDE / FEET_FROM_NODE_BOX_LENGTH
 RATIO_LONGITUDE = FEET_PER_LONGITUDE / FEET_FROM_NODE_BOX_LENGTH
@@ -48,20 +48,37 @@ def create_app(test_config=None) -> Flask:
     def debug():
         seen_crimes = set()
         
+        # 33.774568 -84.39687
+
         nodes = [{
             "Latitude": 33.617926,
             "Longitude": -84.472797
         }]
+
+        nodes2 = [{
+            'Latitude': 33.774568,
+            'Longitude': -84.39687
+        }]
         
-        for node in nodes:
+        nodes3 = [{
+            'Latitude': 33.63993829,
+            'Longitude': -84.45880295
+        }]
+        
+        for node in nodes2:
             nodeLat = node.get("Latitude")
             nodeLong = node.get("Longitude")
+
+            #print(nodeLat, nodeLong)
+
+            print(LATITUDE_DISTANCE, LONGITUDE_DISTANCE)
             
-            for crime in db.crime.find({"Latitude": {"$gt": nodeLat - LATITUDE_DISTANCE}, "Latitude": {"$lt": nodeLat + LATITUDE_DISTANCE}, "Longitude": {"$gt": nodeLong - LONGITUDE_DISTANCE}, "Longitude": {"$lt": nodeLong + LONGITUDE_DISTANCE}}):
+            for crime in db.crime2.find({"Latitude": {"$gt": nodeLat - LATITUDE_DISTANCE}, "Latitude": {"$lt": nodeLat + LATITUDE_DISTANCE}, "Longitude": {"$gt": nodeLong - LONGITUDE_DISTANCE}, "Longitude": {"$lt": nodeLong + LONGITUDE_DISTANCE}}):
                 info = (crime.get('NIBRS Code Name'), crime.get('Latitude'), crime.get('Longitude'))
                 if info not in seen_crimes:
                     seen_crimes.add(info)
         
+        print(len(seen_crimes))
         return render_template("debug.html", db_call_data=seen_crimes)
     
     @app.route("/process1", methods=["POST"])
@@ -83,11 +100,58 @@ def create_app(test_config=None) -> Flask:
     
     @app.route("/process2", methods=["POST"])
     def process2():
+        seen_crimes = set()
+        seen_lights = set()
         data = request.get_json()
-        paths.append(data)
-        print("path appended")
+        i = 0
+        for node in data['coordinates']:
+            if i == 1:
+                break
+            i += 1
+            nodeLat = node[1]
+            nodeLong = node[0]
+
+            print(nodeLat, nodeLong)
+            break
+
+            # for crime in db.crime.find({"Latitude": {"$gt": nodeLat - LATITUDE_DISTANCE},
+            #                             "Latitude": {"$lt": nodeLat + LATITUDE_DISTANCE},
+            #                             "Longitude": {"$gt": nodeLong - LONGITUDE_DISTANCE},
+            #                             "Longitude": {"$lt": nodeLong + LONGITUDE_DISTANCE}})
+
+            for crime in db.crime.find({"Latitude": {"$gt": nodeLat - LATITUDE_DISTANCE},
+                                        "Latitude": {"$lt": nodeLat + LATITUDE_DISTANCE},
+                                        "Longitude": {"$gt": nodeLong - LONGITUDE_DISTANCE},
+                                        "Longitude": {"$lt": nodeLong + LONGITUDE_DISTANCE}}):
+                print(crime)
+                seen_crimes.add(crime.get('_id'))
+                #severity = db.crime_severity.find_one({"Crime": crime.get('NIBRS Code Name')}).get('Severity')
+                #info = (severity, crime.get('Latitude'), crime.get('Longitude'))
+                #if info not in seen_crimes:
+                    #seen_crimes.add(info)
+            
+            print('Check')
+
+            for light in db.streetlights.find({"latitude": {"$gt": nodeLat - LATITUDE_DISTANCE}, "latitude": {"$lt": nodeLat + LATITUDE_DISTANCE}, "longitude": {"$gt": nodeLong - LONGITUDE_DISTANCE}, "longitude": {"$lt": nodeLong + LONGITUDE_DISTANCE}}):
+                info = (light.get('latitude'), light.get('longitude'))
+                if info not in seen_lights:
+                    seen_lights.add(info)
         
-        pprint.pprint(paths)
+        #print(seen_crimes)
+        #print(seen_lights)
+
+        #crime_weight = sum([info[0] for info in seen_crimes])
+        light_weight = len(seen_lights)
+
+        #print(f'Crime: {crime_weight}, Light: {light_weight}')
+        print(f'Crime Length: {len(seen_crimes)}')
+
+        return jsonify(crime_weight, light_weight)
+        
+        #paths.append(data)
+        #print("path appended")
+        
+        #pprint.pprint(paths)
         
         #print("\n\n-----\n\n")
         
