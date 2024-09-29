@@ -59,7 +59,9 @@ def create_app(test_config=None) -> Flask:
         paths = []
         
         return ""
-    
+   
+
+    """
     @app.route("/process2", methods=["POST"])
     def process2():
         seen_crimes = set()
@@ -87,5 +89,36 @@ def create_app(test_config=None) -> Flask:
 
         print(f'Crime Length: {len(seen_crimes)}')
         return ""
+
+        """
+
+    @app.route("/process2", methods=["POST"])
+    def process2():
+
+        start = time.perf_counter()
+
+
+        seen_crimes = set()
+        data = request.get_json()
+    
+        batches = [(node[1] - LATITUDE_DISTANCE, node[1] + LATITUDE_DISTANCE, node[0] - LONGITUDE_DISTANCE, node[0] + LONGITUDE_DISTANCE) for node in data["coordinates"] if data["coordinates"].index(node) % 10 == 0]
+
+        crimes = db.crime2.find({"$or": [{"$and": [{"Latitude": {"$gt": lat_min}}, {"Latitude": {"$lt": lat_max}}, {"Longitude": {"$gt": long_min}}, {"Longitude": {"$lt": long_max}}]} for lat_min, lat_max, long_min, long_max in batches]})
+
+        severity_map = {crime_severity["Crime"]: crime_severity["Severity"] for crime_severity in db.crime_severity.find()}
+
+        for crime in crimes:
+            severity = severity_map.get(crime.get("NIBRS Code Name"))
+            info = (severity, crime.get('Latitude'), crime.get('Longitude'))
+            seen_crimes.add(info)
+
+        print(f'Crime Length: {len(seen_crimes)}')
+
+        end = time.perf_counter()
+
+        print(f"Time to complete: {end - start}")
+
+        return ""
+
     
     return app
