@@ -2,7 +2,7 @@
 
 Our project for HackGT11
 
-To run the code:
+*To run the code:*
 
 ```
 git clone https://github.com/CalebBunch/hackGT11.git
@@ -20,7 +20,7 @@ terraform init
 terraform apply
 ```
 
-To stop the code:
+*To stop the code:*
 
 ```
 terraform destroy
