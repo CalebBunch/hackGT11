@@ -122,12 +122,21 @@ async function requestRoutes(origin, destination) {
             const data = await response.json();
 
             if (data.routes) {
+                tempData = data.routes[0].legs[0].steps;
+                
+                doneList = [];
+                
+                for(let i = 0; i < tempData.length; i++) {
+                    doneList.push(tempData[i].name);
+                }
+
                 const geoData = {
                     "distance": data.routes[0].distance,
                     "duration": data.routes[0].duration,
-                    "coordinates": data.routes[0].geometry.coordinates
+                    "coordinates": data.routes[0].geometry.coordinates,
+                    "streets": doneList
                 };
-
+                
                 const processResponse = await $.ajax({
                     url: "/process2",
                     type: "POST",
@@ -163,6 +172,8 @@ async function requestRoutes(origin, destination) {
         } catch (error) {
             console.error("Error fetching routes:", error);
         }
+        
+        break;
     }
 
     weights.sort((a, b) => a[2] - b[2]);
