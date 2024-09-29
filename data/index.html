@@ -1,0 +1,46 @@
+<!--
+const mapboxApiKey = "pk.eyJ1IjoiY2J1bmNoIiwiYSI6ImNtMWxteW13NTBiaDUybHB6cWJ3Y3dnajUifQ.B_7JKx-8vsKrYnbifAwIgg";
+
+mapboxgl.accessToken = mapboxApiKey;
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Display a Map on a Webpage</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-assembly/v1.3.0/assembly.min.css" rel="stylesheet">
+    <script id="search-js" defer src="https://api.mapbox.com/search-js/v1.0.0-beta.21/web.js"></script>
+</head>
+<body>
+    <form>
+        <input id="address-input" type="text" name="address" autocomplete="shipping street-address" />
+    </form>
+</body>
+<script>
+    const script = document.getElementById('search-js');
+    // wait for the Mapbox Search JS script to load before using it
+    script.onload = function () {
+        // instantiate a <mapbox-address-autofill> element using the MapboxAddressAutofill class
+        const autofillElement = new mapboxsearch.MapboxAddressAutofill();
+
+        autofillElement.accessToken = "pk.eyJ1IjoiY2J1bmNoIiwiYSI6ImNtMWxteW13NTBiaDUybHB6cWJ3Y3dnajUifQ.B_7JKx-8vsKrYnbifAwIgg";
+
+        // set the <mapbox-address-autofill> element's options
+        autofillElement.options = {
+            country: 'us',
+        }
+
+
+        const the_input = document.getElementById('address-input');
+        const the_form = the_input.parentElement;
+
+        // append the <input> to <mapbox-address-autofill>
+        autofillElement.appendChild(the_input);
+        // append <mapbox-address-autofill> to the <form>
+        the_form.appendChild(autofillElement);
+
+    };
+</script>
+</html>
