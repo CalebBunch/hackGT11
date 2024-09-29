@@ -57,4 +57,4 @@ Developing it into a native app so users can more easily use the app on their ph
 ## Example 📸
 
 Here's three optimal routes from Georgia Tech to Emory based on the weightings we set:
-![Example Image](static/icons/clock.svg)
+![Example Image](static/images/gt_emory_path.png)
