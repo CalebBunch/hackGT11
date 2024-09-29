@@ -59,19 +59,6 @@ function success(position) {
 
     document.getElementById("start-destination").value = `${longitude}, ${latitude}`;
 
-    const bounds = [
-        [-84.69846451717459, 33.53149303065644], // Southwest coordinates
-        [-84.12587550388955, 33.94151145206728] // Northeast coordinates
-    ];
-
-    map = new mapboxgl.Map({
-        container: "map",
-        style: "mapbox://styles/mapbox/dark-v11",
-        center: [longitude, latitude],
-        zoom: 11,
-        maxBounds: bounds
-    });
-
     marker1 = new mapboxgl.Marker()
         .setLngLat([longitude, latitude])
         .addTo(map);
@@ -235,6 +222,20 @@ function clearPreviousRoutes() {
     });
     routeGroupIds = [];
 }
+
+const bounds = [
+    [-84.69846451717459, 33.53149303065644], // Southwest coordinates
+    [-84.12587550388955, 33.94151145206728] // Northeast coordinates
+];
+
+map = new mapboxgl.Map({
+    container: "map",
+    style: "mapbox://styles/mapbox/dark-v11",
+    center: [-84.41, 33.736],
+    zoom: 11,
+    maxBounds: bounds
+});
+
 
 if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(success, error);
