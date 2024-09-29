@@ -58,3 +58,10 @@ Developing it into a native app so users can more easily use the app on their ph
 
 Here's three optimal routes from Georgia Tech to Emory based on the weightings we set:
 ![Example Image](static/images/gt_emory_path.png)
+
+## Authors 👨‍💻
+
+- [Caleb Bunch](https://github.com/CalebBunch)
+- [Namit Agrawal](https://github.com/Namitagr1)
+- [Alex Aridgides](https://github.com/leapingturtlefrog)
+- [Shrey Agarwal](https://github.com/agshrey)
