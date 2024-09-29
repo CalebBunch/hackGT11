@@ -1,6 +1,6 @@
-# hackGT11
+# HackGT11
 
-Project for hackGT11
+Our project for HackGT11
 
 To run the code:
 
