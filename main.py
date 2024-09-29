@@ -59,7 +59,7 @@ client = MongoClient(uri)
 db = client.maps2
 
 
-@app.route("/map")
+@app.route("/")
 def map_view():
     return render_template("map.html")
 
