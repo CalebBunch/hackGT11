@@ -132,10 +132,13 @@ async function requestRoutes(origin, destination) {
                     url: "/process2",
                     type: "POST",
                     contentType: "application/json",
-                    data: JSON.stringify(geoData)
+                    data: JSON.stringify(geoData),
+                    success: function(response) {
+                        weights.push([geoData['distance'], geoData['duration'], JSON.parse(response)]);
+                    },
                 });
 
-                weights.push([geoData['distance'], geoData['duration'], JSON.parse(processResponse)]);
+                // weights.push([geoData['distance'], geoData['duration'], JSON.parse(processResponse)]);
                 all_routes.push(...data.routes);
             } else {
                 console.error("No routes found");
@@ -155,7 +158,8 @@ async function requestRoutes(origin, destination) {
             i++;
         }
     });
-
+    
+    alert(all_routes.length);
     drawRoutes(all_routes);
 }
 
