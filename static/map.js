@@ -175,7 +175,7 @@ async function requestRoutes(origin, destination) {
                                 if (weights[i]) {
                                     const [distance, duration, rating] = weights[i];
                                     const durationInMinutes = Math.round(duration / 60.0);
-                                    label.textContent = `Distance: ${distance.toFixed(2)} m — Travel Time: ${durationInMinutes.toFixed(2)} min — Overall Rating: ${rating}`;
+                                    label.textContent = `Distance: ${distance.toFixed(2)} m — Travel Time: ${durationInMinutes} min — Overall Rating: ${rating}`;
                                     i++;
                                 }
                             });
