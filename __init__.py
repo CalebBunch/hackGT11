@@ -67,9 +67,12 @@ def create_app(test_config=None) -> Flask:
         start = time.perf_counter()
 
 
-        seen_crimes = set()
+        
         data = request.get_json()
-    
+        
+        # crimes
+        seen_crimes = set()
+        
         batches = [(node[1] - LATITUDE_DISTANCE, node[1] + LATITUDE_DISTANCE, node[0] - LONGITUDE_DISTANCE, node[0] + LONGITUDE_DISTANCE) for node in data["coordinates"] if data["coordinates"].index(node) % 10 == 0]
 
         crimes = db.crime2.find({"$or": [{"$and": [{"Latitude": {"$gt": lat_min}}, {"Latitude": {"$lt": lat_max}}, {"Longitude": {"$gt": long_min}}, {"Longitude": {"$lt": long_max}}]} for lat_min, lat_max, long_min, long_max in batches]})
@@ -80,13 +83,18 @@ def create_app(test_config=None) -> Flask:
             severity = severity_map.get(crime.get("NIBRS Code Name"))
             info = (severity, crime.get('Latitude'), crime.get('Longitude'))
             seen_crimes.add(info)
+        
+        # streetlights
+        batches = [(node[1] - LATITUDE_DISTANCE, node[1] + LATITUDE_DISTANCE, node[0] - LONGITUDE_DISTANCE, node[0] + LONGITUDE_DISTANCE) for node in data["coordinates"]]
 
-        print(f'Crime Length: {len(seen_crimes)}')
-
+        num_of_lights = db.streetlights.count_documents({"$or": [{"$and": [{"latitude": {"$gt": lat_min}}, {"latitude": {"$lt": lat_max}}, {"longitude": {"$gt": long_min}}, {"longitude": {"$lt": long_max}}]} for lat_min, lat_max, long_min, long_max in batches]})
+        
+        print(f'Crimes: {len(seen_crimes)}. Streetlights: {num_of_lights}')
+        
         end = time.perf_counter()
-
+        
         print(f"Time to complete: {end - start}")
-
+        
         return ""
 
     
