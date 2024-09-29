@@ -94,31 +94,27 @@ function error() {
     alert("Could not access geolocation!");
 }
 
+
 async function requestRoutes(origin, destination) {
     let wayPoints = calculateWayPoints(origin, destination);
     let wayPointOne = wayPoints[0].join(",");
     let wayPointTwo = wayPoints[1].join(",");
 
-    const url1 = `https://api.mapbox.com/directions/v5/mapbox/walking/${origin.join(",")};${destination.join(",")}?geometries=geojson&alternatives=true&access_token=${mapboxApiKey}&steps=true&overview=full`;
-    const url2 = `https://api.mapbox.com/directions/v5/mapbox/walking/${origin.join(",")};${wayPointOne};${destination.join(",")}?geometries=geojson&alternatives=true&access_token=${mapboxApiKey}&steps=true&overview=full`;
-    const url3 = `https://api.mapbox.com/directions/v5/mapbox/walking/${origin.join(",")};${wayPointTwo};${destination.join(",")}?geometries=geojson&alternatives=true&access_token=${mapboxApiKey}&steps=true&overview=full`;
+    const urls = [
+        `https://api.mapbox.com/directions/v5/mapbox/walking/${origin.join(",")};${destination.join(",")}?geometries=geojson&alternatives=true&access_token=${mapboxApiKey}&steps=true&overview=full`,
+        `https://api.mapbox.com/directions/v5/mapbox/walking/${origin.join(",")};${wayPointOne};${destination.join(",")}?geometries=geojson&alternatives=true&access_token=${mapboxApiKey}&steps=true&overview=full`,
+        `https://api.mapbox.com/directions/v5/mapbox/walking/${origin.join(",")};${wayPointTwo};${destination.join(",")}?geometries=geojson&alternatives=true&access_token=${mapboxApiKey}&steps=true&overview=full`
+    ];
 
-    const urls = [url1, url2, url3];
-    let all_routes = [];
+    const weights = [];
+    const all_routes = [];
 
-    $.ajax({
+    await $.ajax({
         url: "/clearPaths",
         type: "POST",
         contentType: "application/json",
-        data: "",
-        success: function(response) {
-        },
-        error: function(error) {
-            console.log(error);
-        }
+        data: ""
     });
-
-    let weights = [];
 
     for (const url of urls) {
         try {
@@ -126,25 +122,20 @@ async function requestRoutes(origin, destination) {
             const data = await response.json();
 
             if (data.routes) {
-                var geoData = {
+                const geoData = {
                     "distance": data.routes[0].distance,
                     "duration": data.routes[0].duration,
                     "coordinates": data.routes[0].geometry.coordinates
                 };
 
-                $.ajax({
+                const processResponse = await $.ajax({
                     url: "/process2",
                     type: "POST",
                     contentType: "application/json",
-                    data: JSON.stringify(geoData),
-                    success: function(response) {
-                        weights.push([geoData['distance'], geoData['duration'], JSON.parse(response)]);
-                    },
-                    error: function(error) {
-                        console.log(error);
-                    }
+                    data: JSON.stringify(geoData)
                 });
 
+                weights.push([geoData['distance'], geoData['duration'], JSON.parse(processResponse)]);
                 all_routes.push(...data.routes);
             } else {
                 console.error("No routes found");
@@ -154,14 +145,17 @@ async function requestRoutes(origin, destination) {
         }
     }
 
-    var final_weights = [];
+    weights.sort((a, b) => a[2] - b[2]);
 
-    for (let i = 0; i < weights.length; ++i) {
-        let curr_weight = weights[i][2];
-        final_weights.push(curr_weight[0] - curr_weight[1]);
-    }
+    let i = 0;
+    document.querySelectorAll(".route-label").forEach(label => {
+        if (weights[i]) {
+            const [distance, duration, rating] = weights[i];
+            label.textContent = `Distance: ${distance.toFixed(2)} m - Time: ${duration.toFixed(2)} s - Overall Rating: ${rating}`;
+            i++;
+        }
+    });
 
-    // sort such that best route is last
     drawRoutes(all_routes);
 }
 
