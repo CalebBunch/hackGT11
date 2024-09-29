@@ -59,38 +59,7 @@ def create_app(test_config=None) -> Flask:
         paths = []
         
         return ""
-   
-
-    """
-    @app.route("/process2", methods=["POST"])
-    def process2():
-        seen_crimes = set()
-        seen_lights = set()
-        data = request.get_json()
-        i = -1
-        for node in data["coordinates"]:
-            i += 1
-
-            if i % 10 != 0:
-                continue
-
-            nodeLat, nodeLong = node[1], node[0]
-
-            crimes = db.crime2.find({"$and": [{"Latitude": {"$gt": nodeLat - LATITUDE_DISTANCE}},{"Latitude": {"$lt": nodeLat + LATITUDE_DISTANCE}},{"Longitude": {"$gt": nodeLong - LONGITUDE_DISTANCE}},{"Longitude": {"$lt": nodeLong + LONGITUDE_DISTANCE}}]})
-
-            print(f"len of crimes: {sum([1 for i in crimes])}")
-
-            for crime in crimes:
-                severity = db.crime_severity.find_one({"Crime": crime.get("NIBRS Code Name")}).get("Severity")
-                info = (severity, crime.get('Latitude'), crime.get('Longitude'))
-                if info not in seen_crimes:
-                    seen_crimes.add(info)
-            
-
-        print(f'Crime Length: {len(seen_crimes)}')
-        return ""
-
-        """
+  
 
     @app.route("/process2", methods=["POST"])
     def process2():
