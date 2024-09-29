@@ -76,6 +76,7 @@
             const crimeValue = document.getElementById("crime-slider").value;
             const roadQualityValue = document.getElementById("road-quality-slider").value;
             const lightingValue = document.getElementById("lighting").value;
+            const timeValue = document.getElementById("time").value;
 
             $.ajax({
                 url: "/process1",
@@ -84,7 +85,8 @@
                 data: JSON.stringify({
                     "crime": crimeValue,
                     "roadQuality": roadQualityValue,
-                    "lighting": lightingValue
+                    "lighting": lightingValue,
+                    "time": timeValue
                 }),
                 success: function(response) {
                 },
@@ -97,6 +99,7 @@
         document.getElementById("crime-slider").addEventListener("change", sendData);
         document.getElementById("road-quality-slider").addEventListener("change", sendData);
         document.getElementById("lighting").addEventListener("change", sendData);
+        document.getElementById("time").addEventListener("change", sendData);
     </script>
     <script src="{{ url_for('static', filename='map.js') }}"></script>
     <script src="{{ url_for('static', filename='style.js') }}"></script>
