@@ -118,6 +118,7 @@ async function requestRoutes(origin, destination) {
         }
     });
 
+    let weights = [];
 
     for (const url of urls) {
         try {
@@ -137,6 +138,7 @@ async function requestRoutes(origin, destination) {
                     contentType: "application/json",
                     data: JSON.stringify(geoData),
                     success: function(response) {
+                        weights.push([geoData['distance'], geoData['duration'], JSON.parse(response)]);
                     },
                     error: function(error) {
                         console.log(error);
@@ -150,6 +152,13 @@ async function requestRoutes(origin, destination) {
         } catch (error) {
             console.error("Error fetching routes:", error);
         }
+    }
+
+    var final_weights = [];
+
+    for (let i = 0; i < weights.length; ++i) {
+        let curr_weight = weights[i][2];
+        final_weights.push(curr_weight[0] - curr_weight[1]);
     }
 
     // sort such that best route is last
