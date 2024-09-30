@@ -52,8 +52,7 @@ app.config.from_mapping(
     SECRET_KEY="8f4a4162e34ef3412932c027",
 )
 
-# NOTE: this is BAD practice
-uri = "mongodb+srv://leapingturtlefrog:9aMc5Ko52zSqwiYh@base.grpjw.mongodb.net/?retryWrites=true&w=majority&appName=Base"
+uri = "YOUR MONGODB ADDRESS HERE"
 
 client = MongoClient(uri)
 db = client.maps2
